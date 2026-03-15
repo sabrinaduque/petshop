@@ -68,7 +68,10 @@ const LoginForm = () => {
     <Container>
       <FormContainer onSubmit={handleSubmit(onSubmit)}>
         <Title>Seja bem vindo!</Title>
-        <SubTitle>Login Exemplo</SubTitle>
+        <SubTitle>
+          Login não integrado, coloque qualquer email e senha que ele vai
+          redirecionar para a página de pets
+        </SubTitle>
 
         <Label>E-mail</Label>
         <Input
