@@ -1,40 +1,37 @@
+import React from 'react';
 import styled from 'styled-components';
 
-interface ButtonProps {
-  outlined?: boolean;
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  color?: string;
+  background?: string;
+  border?: string;
+  hover?: string;
+  width?: string;
+  height?: string;
 }
 
-export const ButtonComponent = styled.button<ButtonProps>`
-  width: 134px;
-  min-height: 35px;
-
-  box-shadow: ${({ outlined }) =>
-    outlined ? 'none' : '0px 4px 4px 0px #00000040'};
-  border-radius: 4px;
-  border: ${({ theme, outlined }) =>
-    outlined ? `1px solid ${theme.colors.primary}` : 'none'};
-  background-color: ${({ theme, outlined }) =>
-    outlined ? theme.colors.white : theme.colors.primary};
-
-  color: ${({ theme, outlined }) =>
-    outlined ? theme.colors.primary : theme.colors.white};
-  font-size: 14px;
+export const StyledButton = styled.button<ButtonProps>`
+  width: ${({ width }) => width || '100%'};
+  height: ${({ height }) => height || '4rem'};
+  font-family: ${({ theme }) => theme.fonts.inter};
   font-weight: 500;
-  line-height: 17.38px;
-
-  animation-timing-function: ease-out;
-  animation-duration: 100ms;
+  font-size: 1.8rem;
 
   display: flex;
+  gap: 1rem;
   align-items: center;
   justify-content: center;
-  gap: 0.3rem;
+
+  padding: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+  color: ${({ color }) => color || '#FEFEFD'};
+  background: ${({ background }) => background || '#257180'};
+  border: ${({ border }) =>
+    border ? `1px solid ${border || '#257180'} ` : 'none'};
 
   &:hover {
-    opacity: 0.9;
-  }
-
-  svg {
-    margin-top: -0.15rem;
+    background: ${({ hover }) => hover || '#1e5a66'};
   }
 `;

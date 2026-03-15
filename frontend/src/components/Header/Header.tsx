@@ -6,9 +6,8 @@ const Header = () => {
     <PageHeader>
       <HeaderBrand>
         <Link href="/" prefetch={false}>
-          <HeaderLogo src="/img/logo.svg" alt="Logo" />
+          <HeaderLogo src="/img/logo-pet.png" alt="Logo" />
         </Link>
-        <HeaderTitle>Petshop</HeaderTitle>
       </HeaderBrand>
     </PageHeader>
   );

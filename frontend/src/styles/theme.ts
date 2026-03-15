@@ -21,4 +21,11 @@ export const theme = {
     black: '#111827',
     white: '#FFFFFF',
   },
+  breakpoints: {
+    xs: '336px',
+    sm: '600px',
+    md: '960px',
+    lg: '1280px',
+    xl: '1920px',
+  },
 } as const;

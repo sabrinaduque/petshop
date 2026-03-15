@@ -56,7 +56,7 @@ const LoginForm = () => {
       );
       localStorage.setItem(localStorageKeys.refreshToken, '123');
 
-      router.push('/home');
+      router.push('/pets');
     } catch (error) {
       handleError(error);
     } finally {

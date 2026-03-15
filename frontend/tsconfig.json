@@ -29,6 +29,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src/utils/masks/document.tsz"
-  ],
+, "src/components/Pages/Pets/index.tsx"  ],
   "exclude": ["node_modules"]
 }

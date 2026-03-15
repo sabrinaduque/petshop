@@ -9,6 +9,11 @@ export const GlobalStyle = createGlobalStyle`
   * {
    scroll-behavior: smooth;
   }
+    :root {
+    font-size: 62.5%;
+    font-family: ${({ theme }) => theme.fonts.inter};
+
+  }
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -28,7 +33,7 @@ export const GlobalStyle = createGlobalStyle`
   }
   body {
     text-rendering: optimizeLegibility;
-    background: ${({ theme }) => theme.colors.grayf5};
+    background: ${({ theme }) => theme.colors.background};
     color: ${({ theme }) => theme.colors.black};
   }
   button {

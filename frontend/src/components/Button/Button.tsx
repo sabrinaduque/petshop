@@ -1,17 +1,36 @@
-import { ButtonHTMLAttributes } from 'react';
-import { ButtonComponent } from './styles';
+import React from 'react';
+import { StyledButton } from './styles';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  text: string;
-  outlined?: boolean;
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  color?: string;
+  hover?: string;
+  background?: string;
+  border?: string;
+  width?: string;
+  height?: string;
 }
 
-const Button = ({ text, outlined, ...rest }: ButtonProps) => {
-  return (
-    <ButtonComponent outlined={outlined} {...rest}>
-      {text}
-    </ButtonComponent>
-  );
-};
+const Button = ({
+  children,
+  color,
+  background,
+  hover,
+  border,
+  width,
+  height,
+  ...rest
+}: ButtonProps) => (
+  <StyledButton
+    color={color}
+    background={background}
+    border={border}
+    hover={hover}
+    width={width}
+    height={height}
+    {...rest}
+  >
+    {children}
+  </StyledButton>
+);
 
 export default Button;
