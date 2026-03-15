@@ -1,6 +1,6 @@
 # 🐾 Petshop Management System
 
-Sistema web para gerenciamento de pets desenvolvido como projeto de **TCC**.
+Sistema web para gerenciamento de pets desenvolvido como projeto para a faculdade.
 
 O sistema permite cadastrar, visualizar, editar e remover pets, além de realizar busca e paginação dos registros.
 
