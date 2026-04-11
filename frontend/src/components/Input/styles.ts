@@ -31,7 +31,7 @@ export const Icon = styled.div<IconProps>`
   pointer-events: none;
 
   svg {
-    color: ${({ theme }) => theme.colors.primary[100]};
+    color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
@@ -56,7 +56,7 @@ export const IconEye = styled.div<IconProps>`
   }
 
   svg {
-    color: ${({ theme }) => theme.colors.primary[100]};
+    color: ${({ theme }) => theme.colors.primary};
   }
 `;
 

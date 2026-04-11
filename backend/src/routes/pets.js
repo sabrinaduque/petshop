@@ -8,13 +8,24 @@ router.get("/", async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 5;
   const offset = (page - 1) * limit;
+  const search = (req.query.search || "").toString().trim();
 
-  const petsResult = await db.query(
-    "SELECT * FROM pets ORDER BY id LIMIT $1 OFFSET $2",
-    [limit, offset]
-  );
+  const hasSearch = search.length > 0;
 
-  const totalResult = await db.query("SELECT COUNT(*) FROM pets");
+  const whereClause = hasSearch
+    ? "WHERE nome ILIKE $1 OR especie ILIKE $1 OR raca ILIKE $1 OR nome_dono ILIKE $1"
+    : "";
+
+  const petsQuery = `SELECT * FROM pets ${whereClause} ORDER BY id LIMIT $${hasSearch ? 2 : 1} OFFSET $${hasSearch ? 3 : 2}`;
+  const petsParams = hasSearch ? [`%${search}%`, limit, offset] : [limit, offset];
+
+  const countQuery = `SELECT COUNT(*) FROM pets ${whereClause}`;
+  const countParams = hasSearch ? [`%${search}%`] : [];
+
+  const [petsResult, totalResult] = await Promise.all([
+    db.query(petsQuery, petsParams),
+    db.query(countQuery, countParams),
+  ]);
 
   const total = parseInt(totalResult.rows[0].count);
   const totalPages = Math.ceil(total / limit);
