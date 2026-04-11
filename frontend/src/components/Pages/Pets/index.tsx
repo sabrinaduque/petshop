@@ -14,6 +14,7 @@ import { useEffect, useState } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
 import Button from '@/components/Button/Button';
 import Input from '@/components/Input/Input';
+import { HiOutlineEye } from 'react-icons/hi';
 import {
   Container,
   HeaderActions,
@@ -22,6 +23,7 @@ import {
   SearchWrapper,
   StyledTableCell,
   StyledTableRow,
+  ActionWrapper,
 } from './styles';
 
 const Pets = () => {
@@ -89,6 +91,7 @@ const Pets = () => {
                 <StyledTableCell>Espécie</StyledTableCell>
                 <StyledTableCell>Raça</StyledTableCell>
                 <StyledTableCell>Dono</StyledTableCell>
+                <StyledTableCell align="right">Ações</StyledTableCell>
               </TableRow>
             </TableHead>
 
@@ -106,6 +109,17 @@ const Pets = () => {
                   </StyledTableCell>
                   <StyledTableCell>
                     {capitalizeFirstLetter(pet.nome_dono)}
+                  </StyledTableCell>
+                  <StyledTableCell className="actions">
+                    <ActionWrapper>
+                      <HiOutlineEye
+                        size={24}
+                        className="eye"
+                        color="#A2A2A2"
+                        onClick={() => router.push(`/pets/${pet.id}`)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                    </ActionWrapper>
                   </StyledTableCell>
                 </StyledTableRow>
               ))}

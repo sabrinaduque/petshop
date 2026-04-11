@@ -19,6 +19,19 @@ export const usePets = (params: IPetsParams) => {
   });
 };
 
+export const useDetailPets = (id: string) => {
+  const getPet = async () => {
+    const { data } = await api.get<Pet>(`/pets/${id}`);
+    return data;
+  };
+
+  return useQuery({
+    queryKey: ['getDetailPets', id],
+    queryFn: getPet,
+    enabled: !!id,
+  });
+};
+
 export const useCreatePets = () => {
   const queryClient = useQueryClient();
   return useMutation({

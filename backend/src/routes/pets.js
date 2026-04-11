@@ -4,11 +4,11 @@ const db = require("../database/connection");
 
 // GET todos pets
 router.get("/", async (req, res) => {
-
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 5;
   const offset = (page - 1) * limit;
   const search = (req.query.search || "").toString().trim();
+  
 
   const hasSearch = search.length > 0;
 
@@ -16,10 +16,22 @@ router.get("/", async (req, res) => {
     ? "WHERE nome ILIKE $1 OR especie ILIKE $1 OR raca ILIKE $1 OR nome_dono ILIKE $1"
     : "";
 
-  const petsQuery = `SELECT * FROM pets ${whereClause} ORDER BY id LIMIT $${hasSearch ? 2 : 1} OFFSET $${hasSearch ? 3 : 2}`;
-  const petsParams = hasSearch ? [`%${search}%`, limit, offset] : [limit, offset];
+  const petsQuery = `
+      SELECT * FROM pets
+      ${whereClause}
+      ORDER BY id
+      LIMIT $${hasSearch ? 2 : 1}
+      OFFSET $${hasSearch ? 3 : 2}
+    `;
 
-  const countQuery = `SELECT COUNT(*) FROM pets ${whereClause}`;
+  const petsParams = hasSearch
+    ? [`%${search}%`, limit, offset]
+    : [limit, offset];
+
+  const countQuery = `
+  SELECT COUNT(*) FROM pets
+  ${whereClause}
+  `;
   const countParams = hasSearch ? [`%${search}%`] : [];
 
   const [petsResult, totalResult] = await Promise.all([
@@ -36,10 +48,9 @@ router.get("/", async (req, res) => {
       page,
       limit,
       total,
-      totalPages
-    }
+      totalPages,
+    },
   });
-
 });
 
 // GET pet por id
@@ -51,13 +62,14 @@ router.get("/:id", async (req, res) => {
 
 // POST criar pet
 router.post("/", async (req, res) => {
-  const { nome, especie, raca, idade, peso, nome_dono, telefone_dono, status } = req.body;
+  const { nome, especie, raca, idade, peso, nome_dono, telefone_dono, status } =
+    req.body;
 
   const result = await db.query(
     `INSERT INTO pets 
     (nome, especie, raca, idade, peso, nome_dono, telefone_dono, status)
     VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
-    [nome, especie, raca, idade, peso, nome_dono, telefone_dono, status]
+    [nome, especie, raca, idade, peso, nome_dono, telefone_dono, status],
   );
 
   res.json(result.rows[0]);
@@ -66,14 +78,15 @@ router.post("/", async (req, res) => {
 // PUT editar pet
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
-  const { nome, especie, raca, idade, peso, nome_dono, telefone_dono, status } = req.body;
+  const { nome, especie, raca, idade, peso, nome_dono, telefone_dono, status } =
+    req.body;
 
   await db.query(
     `UPDATE pets SET
      nome=$1, especie=$2, raca=$3, idade=$4, peso=$5,
      nome_dono=$6, telefone_dono=$7, status=$8
      WHERE id=$9`,
-    [nome, especie, raca, idade, peso, nome_dono, telefone_dono, status, id]
+    [nome, especie, raca, idade, peso, nome_dono, telefone_dono, status, id],
   );
 
   res.json({ message: "Pet atualizado" });

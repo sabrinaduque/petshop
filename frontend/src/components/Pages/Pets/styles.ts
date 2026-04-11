@@ -69,7 +69,7 @@ export const StudentAvatar = styled.img`
 
 export const ActionWrapper = styled.div`
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
   gap: 16px;
 `;
