@@ -1,11 +1,15 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { IoIosArrowBack } from 'react-icons/io';
+import { IoIosArrowBack, IoIosTrash } from 'react-icons/io';
 
-import { useDetailPets } from '@/services/pets';
+import { useDeletePet, useDetailPets } from '@/services/pets';
 import { maskPhone } from '@/utils/mask';
 
+import Button from '@/components/Button/Button';
+import { LuTrash2 } from 'react-icons/lu';
+import { useState } from 'react';
+import { Modal } from '@mui/material';
 import {
   Container,
   ContentBox,
@@ -13,25 +17,64 @@ import {
   Grid,
   Label,
   Title,
+  TitleLeft,
   Value,
 } from './styles';
+import { ModalActions, ModalContent } from '../PetsForm/styles';
 
 const PetsDetails = () => {
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
-
   const { data: pet, isLoading, isError } = useDetailPets(id);
+  const [showModal, setShowModal] = useState({
+    warning: false,
+    success: false,
+  });
 
-  const handleBack = () => {
-    router.back();
+  const deleteMutation = useDeletePet();
+
+  const handleCloseModal = () => {
+    setShowModal({
+      warning: false,
+      success: false,
+    });
+  };
+
+  const handleDelete = async () => {
+    if (!id || Number.isNaN(id)) return;
+
+    await deleteMutation.mutateAsync(Number(id), {
+      onSuccess: () => {
+        setShowModal({
+          ...showModal,
+          warning: false,
+          success: true,
+        });
+      },
+    });
   };
 
   return (
     <Container>
       <Title>
-        <IoIosArrowBack onClick={handleBack} style={{ cursor: 'pointer' }} />
-        Detalhes do pet
+        <TitleLeft>
+          <IoIosArrowBack
+            onClick={() => router.back()}
+            style={{ cursor: 'pointer' }}
+          />
+          Detalhes do pet
+        </TitleLeft>
+
+        <Button
+          type="button"
+          onClick={() => setShowModal({ ...showModal, warning: true })}
+          disabled={!id || isLoading || deleteMutation.isPending}
+          width="150px"
+        >
+          Excluir pet
+          <LuTrash2 size={18} />
+        </Button>
       </Title>
 
       <ContentBox>
@@ -91,6 +134,63 @@ const PetsDetails = () => {
           </Grid>
         )}
       </ContentBox>
+
+      <Modal open={showModal.warning} onClose={handleCloseModal}>
+        <ModalContent>
+          <h2>Excluir Pet</h2>
+          <p>Tem certeza que deseja excluir este pet?</p>
+          <ModalActions>
+            <Button
+              type="button"
+              background="#28a745"
+              hover="#1e7e34"
+              width="90px"
+              onClick={handleCloseModal}
+            >
+              Voltar
+            </Button>
+
+            <Button
+              type="button"
+              background="transparent"
+              border="#28a745"
+              color="#28a745"
+              hover="rgba(40, 167, 69, 0.12)"
+              width="90px"
+              onClick={() => handleDelete()}
+            >
+              Excluir
+            </Button>
+          </ModalActions>
+        </ModalContent>
+      </Modal>
+
+      <Modal
+        open={showModal.success}
+        onClose={() => {
+          setShowModal({ ...showModal, success: false });
+          router.push('/pets');
+        }}
+      >
+        <ModalContent>
+          <h2>Sucesso!</h2>
+          <p>Pet excluído com sucesso!</p>
+          <ModalActions>
+            <Button
+              type="button"
+              background="#28a745"
+              hover="#1e7e34"
+              width="50%"
+              onClick={() => {
+                setShowModal({ ...showModal, success: false });
+                router.push('/pets');
+              }}
+            >
+              Fechar
+            </Button>
+          </ModalActions>
+        </ModalContent>
+      </Modal>
     </Container>
   );
 };
