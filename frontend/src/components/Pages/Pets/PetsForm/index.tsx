@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Button from '@/components/Button/Button';
@@ -13,7 +13,7 @@ import {
   RegisterPetFormData,
   RegisterPetSchema,
 } from '@/validations/RegisterPetsSchema';
-import { useCreatePets } from '@/services/pets';
+import { useCreatePets, useDetailPets, useEditPet } from '@/services/pets';
 import handleError from '@/utils/handleToast';
 import {
   Container,
@@ -34,8 +34,8 @@ const PetForm = () => {
   const isEditMode = !!id;
   const createMutation = useCreatePets();
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
-  // const editMutation = useEditPet(id as string);
-  // const { data } = useDetailsPet(id as string);
+  const editPetMutation = useEditPet(id as string);
+  const { data } = useDetailPets(id as string);
 
   const {
     register,
@@ -48,19 +48,37 @@ const PetForm = () => {
 
   const { isPending } = createMutation;
 
-  // useEffect(() => {
-  //   if (isEditMode && id) {
-  //     reset({});
-  //   }
-  // }, [isEditMode, id, data, reset]);
+  useEffect(() => {
+    if (isEditMode && id) {
+      reset({
+        nome: data?.nome,
+        especie: data?.especie,
+        raca: data?.raca,
+        idade: data?.idade,
+        peso: data?.peso,
+        nome_dono: data?.nome_dono,
+        telefone_dono: maskPhone(data?.telefone_dono ?? ''),
+        status: data?.status,
+      });
+    }
+  }, [isEditMode, id, data, reset]);
 
   const onSubmit = async (formData: RegisterPetFormData) => {
     try {
       if (isEditMode && id) {
-        // const payload = formData;
-        // await editPetMutation.mutateAsync({
-        //
-        // });
+        const payload = formData;
+        await editPetMutation.mutateAsync({
+          nome: payload.nome,
+          especie: payload.especie,
+          raca: payload.raca,
+          idade: payload.idade,
+          peso: payload.peso,
+          nome_dono: payload.nome_dono,
+          telefone_dono: unmaskPhone(payload.telefone_dono ?? ''),
+          status: payload.status,
+        });
+
+        setIsSuccessOpen(true);
 
         return;
       }
@@ -189,7 +207,11 @@ const PetForm = () => {
       <Modal open={isSuccessOpen} onClose={handleCloseSuccess}>
         <ModalContent>
           <h2>Sucesso!</h2>
-          <p>Pet cadastrado com sucesso.</p>
+          <p>
+            {isEditMode
+              ? 'Pet editado com sucesso.'
+              : 'Pet cadastrado com sucesso.'}
+          </p>
           <ModalActions>
             <Button
               type="button"

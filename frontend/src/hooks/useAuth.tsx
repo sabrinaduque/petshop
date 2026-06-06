@@ -1,29 +1,20 @@
-/* eslint-disable react/jsx-no-constructed-context-values */
-
 'use client';
 
-import { redirect, usePathname } from 'next/navigation';
+import { User } from '@/interfaces/user.interface';
+import { localStorageKeys } from '@/utils/localStorageKeys';
+
 import {
   createContext,
   ReactNode,
   SetStateAction,
   useContext,
   useEffect,
+  useMemo,
+  useCallback,
   useState,
 } from 'react';
-import { localStorageKeys } from '@/utils/localStorageKeys';
 
-export interface User {
-  id: number;
-  email: string;
-  username: string;
-}
-
-export interface ILoginResponse {
-  jwt: string;
-  refreshToken: string;
-  user: User;
-}
+import { usePathname, useRouter } from 'next/navigation';
 
 interface IUserProvider {
   user: User;
@@ -43,41 +34,61 @@ const AuthProvider = ({ children }: ChildrenProps) => {
   const [loading, setLoading] = useState(true);
 
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const dataUser = localStorage.getItem(localStorageKeys.user);
 
     if (dataUser) {
-      setUser(JSON.parse(dataUser));
+      try {
+        setUser(JSON.parse(dataUser));
+      } catch {
+        localStorage.removeItem(localStorageKeys.user);
+      }
     }
 
     setLoading(false);
   }, []);
 
-  const isAuthenticated = !!user.id;
+  const isAuthenticated = !!user?.id;
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem(localStorageKeys.user);
     localStorage.removeItem(localStorageKeys.accessToken);
     localStorage.removeItem(localStorageKeys.refreshToken);
 
     setUser({} as User);
-  };
+
+    router.push('/');
+  }, [router]);
 
   const publicRoutes = ['/'];
+
+  useEffect(() => {
+    if (loading) return;
+
+    // usuário não autenticado
+    if (!isAuthenticated && !publicRoutes.includes(pathname)) {
+      router.push('/');
+    }
+
+    // usuário autenticado
+    if (isAuthenticated && pathname === '/') {
+      router.push('/pets');
+    }
+  }, [isAuthenticated, pathname, loading, router]);
+
+  const contextValue = useMemo(
+    () => ({ user, setUser, isAuthenticated, logout }),
+    [user, setUser, isAuthenticated, logout],
+  );
 
   if (loading) {
     return null;
   }
 
-  if (!isAuthenticated && !publicRoutes.includes(pathname)) {
-    redirect('/');
-  }
-
   return (
-    <AuthContext.Provider value={{ user, setUser, isAuthenticated, logout }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
 

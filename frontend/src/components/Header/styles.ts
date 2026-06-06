@@ -49,3 +49,38 @@ export const HeaderTitle = styled.p`
     font-size: 1.6rem;
   }
 `;
+
+export const HeaderActions = styled.div`
+  position: absolute;
+  right: 2.4rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  @media (max-width: 968px) {
+    right: 1.5rem;
+  }
+`;
+
+export const LogoutButton = styled.button`
+  background: transparent;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0.35rem;
+  border-radius: 6px;
+
+  svg {
+    width: 22px;
+    height: 22px;
+    color: ${({ theme }) => theme.colors.primary};
+  }
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.gray200};
+  }
+`;

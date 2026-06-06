@@ -7,8 +7,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { ILoginForm, LoginSchema } from '@/validations/LoginSchema';
 import { localStorageKeys } from '@/utils/localStorageKeys';
 import { useAuth } from '@/hooks/useAuth';
-import handleError from '@/utils/handleToast';
+import handleError, { getErrorMessage } from '@/utils/handleToast';
 
+import { LoginResponse, User } from '@/interfaces/user.interface';
+import api from '@/services/api';
 import {
   Button,
   Container,
@@ -21,6 +23,8 @@ import {
   RegisterText,
   CheckboxLabel,
   Field,
+  InputWrapper,
+  Logo,
 } from './styles';
 
 const LoginForm = () => {
@@ -37,26 +41,40 @@ const LoginForm = () => {
     formState: { errors },
   } = useForm<ILoginForm>({
     resolver: yupResolver(LoginSchema),
+    defaultValues:
+      process.env.NODE_ENV === 'development'
+        ? {
+            email: 'admin@petshop.com',
+            password: '123456',
+          }
+        : {
+            email:
+              typeof window !== 'undefined' &&
+              localStorage.getItem('rememberMe') === 'true'
+                ? localStorage.getItem('email') ?? ''
+                : '',
+          },
   });
 
-  const onSubmit: SubmitHandler<ILoginForm> = async () => {
+  const onSubmit: SubmitHandler<ILoginForm> = async (form: ILoginForm) => {
     try {
       setIsSubmitting(true);
 
-      setUser({ id: 1, username: 'User Test', email: 'user@gmail.com' });
-
-      localStorage.setItem(localStorageKeys.accessToken, '123');
-      localStorage.setItem(
-        localStorageKeys.user,
-        JSON.stringify({
-          id: 1,
-          username: 'User Test',
-          email: 'user@gmail.com',
-        }),
+      const { data } = await api.post<LoginResponse>(
+        '/auth/login',
+        {
+          email: form.email,
+          password: form.password,
+        },
+        {
+          skipAuthRefresh: true,
+        } as any,
       );
-      localStorage.setItem(localStorageKeys.refreshToken, '123');
 
-      router.push('/pets');
+      localStorage.setItem(localStorageKeys.accessToken, data.token);
+      localStorage.setItem(localStorageKeys.user, JSON.stringify(data.user));
+
+      setUser(JSON.parse(JSON.stringify(data.user)) as User);
     } catch (error) {
       handleError(error);
     } finally {
@@ -67,11 +85,10 @@ const LoginForm = () => {
   return (
     <Container>
       <FormContainer onSubmit={handleSubmit(onSubmit)}>
-        <Title>Seja bem vindo!</Title>
-        <SubTitle>
-          Login não integrado, coloque qualquer email e senha que ele vai
-          redirecionar para a página de pets
-        </SubTitle>
+        {/* <Title>Seja bem vindo!</Title> */}
+
+        <Logo src="img/logo-pet.png" alt="Logo" />
+        <SubTitle>Área de acesso ao sistema</SubTitle>
 
         <Label>E-mail</Label>
         <Input
@@ -85,26 +102,26 @@ const LoginForm = () => {
 
         <Field>
           <Label>Senha</Label>
-          <Input
-            type={show ? 'text' : 'password'}
-            placeholder="Digite a senha"
-            {...register('password')}
-          />
-          {show ? (
-            <IoEyeOutline
-              className="icon"
-              size={22}
-              color="black"
-              onClick={() => setShow(false)}
+          <InputWrapper>
+            <Input
+              type={show ? 'text' : 'password'}
+              placeholder="Digite a senha"
+              {...register('password')}
             />
-          ) : (
-            <IoEyeOffOutline
-              className="icon"
-              size={22}
-              color="black"
-              onClick={() => setShow(true)}
-            />
-          )}
+            {show ? (
+              <IoEyeOutline
+                className="icon"
+                size={22}
+                onClick={() => setShow(false)}
+              />
+            ) : (
+              <IoEyeOffOutline
+                className="icon"
+                size={22}
+                onClick={() => setShow(true)}
+              />
+            )}
+          </InputWrapper>
           {errors?.password?.message && (
             <ErrorMessage>{errors.password.message}</ErrorMessage>
           )}
@@ -120,8 +137,9 @@ const LoginForm = () => {
           />
           <CheckboxLabel>Lembrar-me</CheckboxLabel>
         </RegisterText>
+
         <Button type="submit" disabled={isSubmitting}>
-          ENTRAR
+          Entrar
         </Button>
       </FormContainer>
     </Container>

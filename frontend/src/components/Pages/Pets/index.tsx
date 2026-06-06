@@ -17,6 +17,7 @@ import Button from '@/components/Button/Button';
 import Input from '@/components/Input/Input';
 import { HiOutlineEye } from 'react-icons/hi';
 import { LuTrash2 } from 'react-icons/lu';
+import { MdOutlineModeEdit } from 'react-icons/md';
 import { Pet } from '@/interfaces/pets.interface';
 import {
   Container,
@@ -152,11 +153,19 @@ const Pets = () => {
 
                   <StyledTableCell className="actions">
                     <ActionWrapper>
+                      <MdOutlineModeEdit
+                        size={24}
+                        className="edit"
+                        color="#A2A2A2"
+                        onClick={() => router.push(`/pets/${pet.id}/editar`)}
+                        style={{ cursor: 'pointer' }}
+                      />
+
                       <HiOutlineEye
                         size={24}
                         className="eye"
                         color="#A2A2A2"
-                        onClick={() => router.push(`/pets/${pet.id}`)}
+                        onClick={() => router.push(`/pets/${pet.id}/detalhes`)}
                         style={{ cursor: 'pointer' }}
                       />
 

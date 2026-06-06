@@ -48,6 +48,22 @@ export const useCreatePets = () => {
   });
 };
 
+export const useEditPet = (id: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: Pet) => {
+      const { data: response } = await api.put(`/pets/${id}`, data);
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['getPets'] });
+    },
+    onError: error => {
+      handleError(error);
+    },
+  });
+};
+
 export const useDeletePet = () => {
   const queryClient = useQueryClient();
   return useMutation({

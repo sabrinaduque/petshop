@@ -12,8 +12,8 @@ const inter = Inter({
 //
 
 export const metadata: Metadata = {
-  title: 'Boilerplate Next',
-  description: 'Boilerplate Next',
+  title: 'PetCare',
+  description: 'PetCare - Gerenciamento de Pets',
 };
 
 const RootLayout = ({
